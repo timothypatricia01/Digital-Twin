@@ -11,3 +11,5 @@ venv/
 # Python cache files
 __pycache__/
 *.py[cod]
+my_profile.pdf
+storage/
