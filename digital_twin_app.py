@@ -3,8 +3,24 @@ import streamlit as st
 from dotenv import load_dotenv
 from groq import Groq
 from rag_storage import DigitalTwinRAG
-
 rag = DigitalTwinRAG()
+# Create a neat sidebar section for managing your twin's memory data documents
+st.sidebar.title("📚 Memory Management")
+uploaded_file = st.sidebar.file_uploader("Upload background knowledge PDF", type=["pdf"])
+
+if uploaded_file is not None:
+    # Build a temporary filepath directory to store incoming files safely
+    temp_dir = "storage_temp"
+    os.makedirs(temp_dir, exist_ok=True)
+    temp_path = os.path.join(temp_dir, uploaded_file.name)
+    
+    # Write the bytes down to the file system so pypdf can read it
+    with open(temp_path, "wb") as f:
+        f.write(uploaded_file.getbuffer())
+        
+    with st.sidebar.spinner("Processing document..."):
+        rag.ingest_pdf(temp_path)
+    st.sidebar.success(f"Successfully memorized {uploaded_file.name}!")
 
 # 1. Load configuration and secret key
 load_dotenv()
